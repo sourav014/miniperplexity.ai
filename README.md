@@ -1,4 +1,4 @@
-# miniperplexity.ai
+# [miniperplexity.ai](https://miniperplexityai.up.railway.app/)
 Minimal version of Q&amp;A system like Perplexity.ai
 
 Setting Up the Repository Locally
