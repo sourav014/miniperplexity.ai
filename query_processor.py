@@ -33,7 +33,8 @@ class QueryProcessor:
     def __init__(self, handlers) -> None:
         self.handlers = handlers
     
-    def process_query(self, query: str):
+
+    def search_query(self, query: str):
         results = []
         with ThreadPoolExecutor() as executor:
             future_to_url = {executor.submit(handler.fetch, query): handler for handler in self.handlers}
@@ -90,7 +91,18 @@ class QueryProcessor:
         llm_answer = response.choices[0].message.content
         return llm_answer
 
+    def process_query(self, query: str):
+        final_respose = None
+        search_results = self.search_query(query=query)
+        for search_result in search_results:
+            _, web_page_urls = search_result
+            results = self.process_urls(urls=web_page_urls)
+            sources = "\n".join([f"{number+1}. {link}" for number, link in enumerate(results.keys())])
+            llm_answer = self.llm_call(query=query, searc_dic=results)
+            if sources and llm_answer:
+                final_respose = sources + "\n \n" + llm_answer
 
+        return final_respose
 
 
 
