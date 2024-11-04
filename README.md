@@ -44,3 +44,35 @@ Ensure the following are installed and configured before proceeding:
     ```
     python3 app.py
     ```
+
+Setting Up the Repository Locally using Docker
+==============================================
+1.  Clone the repository:
+    ```
+    git clone https://github.com/sourav014/miniperplexityAI.git
+    ```
+2.  Navigate to the project directory
+    ```
+    cd miniperplexityAI
+    ```
+3.  Configure environment variables: Create a .env file in the project root and add your configuration values:
+    ```
+    SERVER_HOST="0.0.0.0"
+    SERVER_PORT="8080"
+    GOOGLE_CUSTOM_SEARCH_API_KEY="your-google-custom-search-api-key"
+    SEARCH_ENGINE_ID="your-search-engine-id"
+    BING_API_KEY="your-bing-api-key"
+    OPENAI_API_KEY="your-openai-api-key"
+    ```
+4.  Build the docker image:
+    ```
+    sudo docker build -t miniperplexityai .
+    ```
+4.  Start the container:
+    ```
+    sudo docker run -d --name miniperplexityai_container -p 8080:8080 miniperplexityai
+    ```
+
+After completing the setup, open your favorite browser and navigate to http://127.0.0.1:8080/ to start interacting with the application.
+
+We know developers often prefer a dark theme, but currently, this application does not support it. Thank you for your patience, and enjoy exploring the app!
