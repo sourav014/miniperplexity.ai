@@ -1,15 +1,6 @@
-import os
 import requests
 import time
-from dotenv import load_dotenv
-
-load_dotenv()
-
-GOOGLE_CUSTOM_SEARCH_API_KEY=os.getenv('GOOGLE_CUSTOM_SEARCH_API_KEY')
-SEARCH_ENGINE_ID=os.getenv('SEARCH_ENGINE_ID')
-BING_API_KEY=os.getenv('BING_API_KEY')
-MAX_RETRIES = 3
-RETRY_DELAY = 2
+from constants import SEARCH_ENGINE_ID, GOOGLE_CUSTOM_SEARCH_API_KEY, MAX_RETRIES, RETRY_DELAY, BING_API_KEY
 
 class SearchHandler:
     def fetch(self, query: str) -> list:

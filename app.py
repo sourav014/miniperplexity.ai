@@ -1,6 +1,7 @@
 import os
+import time
     
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template, Response, stream_with_context
 from dotenv import load_dotenv
 from flask_cors import CORS
 from search import GoogleCustomSearchHandler, BingSearchHandler
@@ -29,9 +30,7 @@ def resolve_search_query():
     # handlers = [GoogleCustomSearchHandler(), BingSearchHandler()]
     handlers = [GoogleCustomSearchHandler()]
     query_processor = QueryProcessor(handlers=handlers)
-    res = query_processor.process_query(query=user_query)
-    print(f"Response received for the query {user_query} is: {res}")
-    return jsonify({'response': res})
+    return Response(query_processor.process_query_stream(query=user_query), mimetype='text/plain')
 
 if __name__ == "__main__":
     app.run(host=os.getenv("SERVER_HOST"), port=os.getenv("SERVER_PORT"))

@@ -1,33 +1,12 @@
 
-from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import re
 import requests
-import os
+
 from openai import OpenAI
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-
-load_dotenv()
-
-SEARCH_TIME_LIMIT = 3
-LLM_MODEL = 'gpt-4o-mini'
-OPENAI_API_KEY=os.getenv('OPENAI_API_KEY')
-
-system_prompt_cited_answer = """You are a helpful assistant who is expert at answering user's queries based on the cited context."""
-cited_answer_prompt = """
-Provide a relevant, informative response to the user's query using the given context (search results with [citation number](website link) and brief descriptions).
-
-- Answer directly without referring the user to any external links.
-- Use an unbiased, journalistic tone and avoid repeating text.
-- Format your response in markdown with bullet points for clarity.
-- Cite all information using [citation number](website link) notation, matching each part of your answer to its source.
-
-Context Block:
-{context_block}
-
-User Query:
-{query}
-"""
-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from constants import SEARCH_TIME_LIMIT, LLM_MODEL, OPENAI_API_KEY, cited_answer_prompt, system_prompt_cited_answer
 
 class QueryProcessor:
     def __init__(self, handlers) -> None:
@@ -86,23 +65,35 @@ class QueryProcessor:
         msg = [{"role": "user", "content": prompt}]
         response = client.chat.completions.create(
             model=llm_model,
-            messages=[{"role": "system", "content": system_prompt}, *msg]
+            messages=[{"role": "system", "content": system_prompt}, *msg],
+            stream=True
         )
-        llm_answer = response.choices[0].message.content
-        return llm_answer
 
-    def process_query(self, query: str):
-        final_respose = None
+        buffer = ""
+        for chunk in response:
+            chunk_content = chunk.choices[0].delta.content
+            if chunk_content:
+                buffer += chunk_content
+                if re.search(r"[.!?](?:\s|$)", buffer) or re.search(r"\)\]$", buffer):
+                    yield f"{buffer.strip()}\n\n"
+                    buffer = ""
+
+        if buffer:
+            yield f"{buffer.strip()}\n\n"
+
+    def process_query_stream(self, query: str):
         search_results = self.search_query(query=query)
         for search_result in search_results:
             _, web_page_urls = search_result
+            print(len(web_page_urls))
             results = self.process_urls(urls=web_page_urls)
             sources = "\n".join([f"{number+1}. {link}" for number, link in enumerate(results.keys())])
-            llm_answer = self.llm_call(query=query, searc_dic=results)
-            if sources and llm_answer:
-                final_respose = sources + "\n \n" + llm_answer
+            yield f"{sources}\n\n"
+            llm_answer_stream = self.llm_call(query=query, searc_dic=results)
 
-        return final_respose
+            for llm_chunk in llm_answer_stream:
+                yield llm_chunk 
+
 
 
 

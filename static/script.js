@@ -1,25 +1,26 @@
+const chatBox = document.getElementById('chat-box');
+
+function displayMessage(message, className) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', className);
+    messageElement.innerHTML = message.replace(/\n/g, "<br>");
+    chatBox.appendChild(messageElement);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 async function sendQuery() {
     const queryInput = document.getElementById('query-input');
-    const chatBox = document.getElementById('chat-box');
-
     const query = queryInput.value.trim();
     if (!query) return;
 
-    // Display the user's message
-    const userMessage = document.createElement('div');
-    userMessage.classList.add('message', 'user-message');
-    userMessage.textContent = query;
-    chatBox.appendChild(userMessage);
+    // Display user's message in the chat
+    displayMessage(query, 'user-message');
 
-    // Clear the input field
+    // Clear input field after sending
     queryInput.value = '';
 
-    // Scroll to the bottom of the chat box to show the latest message
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    // Send the query to the backend
     try {
-        const response = await fetch('/api/search', {
+        const response = await fetch('http://127.0.0.1:8080/api/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -27,17 +28,21 @@ async function sendQuery() {
             body: JSON.stringify({ query: query })
         });
 
-        const result = await response.json();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
 
-        // Display the bot's response
-        const botMessage = document.createElement('div');
-        botMessage.classList.add('message', 'bot-message');
-        botMessage.innerHTML = result.response.replace(/\n/g, '<br>');
-        chatBox.appendChild(botMessage);
+        let botMessageElement = document.createElement('div');
+        botMessageElement.classList.add('message', 'bot-message');
+        chatBox.appendChild(botMessageElement);
 
-        // Scroll to the bottom of the chat box to show the latest message
-        chatBox.scrollTop = chatBox.scrollHeight;
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            botMessageElement.innerHTML += chunk.replace(/\n/g, "<br>");
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
     } catch (error) {
-        console.error("Error fetching response:", error);
+        console.error("Error fetching stream:", error);
     }
 }
