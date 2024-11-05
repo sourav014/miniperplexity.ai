@@ -87,8 +87,10 @@ class QueryProcessor:
             _, web_page_urls = search_result
             print(len(web_page_urls))
             results = self.process_urls(urls=web_page_urls)
-            sources = "\n".join([f"{number+1}. {link}" for number, link in enumerate(results.keys())])
-            yield f"{sources}\n\n"
+            sources = [f"{number+1}. {link}" for number, link in enumerate(results.keys())]
+            for source in sources:
+                yield f"{source}\n"
+            yield "\n\n"
             llm_answer_stream = self.llm_call(query=query, searc_dic=results)
 
             for llm_chunk in llm_answer_stream:
