@@ -73,6 +73,6 @@ Setting Up the Repository Locally using Docker
     sudo docker run -d --name miniperplexityai_container -p 8080:8080 miniperplexityai
     ```
 
-After completing the setup, open your favorite browser and navigate to http://127.0.0.1:8080/ to start interacting with the application.
+After completing the setup, open your favorite browser and navigate to http://127.0.0.1:8080/ to start interacting with the application. 
 
 We know developers often prefer a dark theme, but currently, this application does not support it. Thank you for your patience, and enjoy exploring the app!
