@@ -33,4 +33,4 @@ def resolve_search_query():
     return Response(query_processor.process_query_stream(query=user_query), mimetype='text/plain')
 
 if __name__ == "__main__":
-    app.run(host=os.getenv("SERVER_HOST"), port=os.getenv("SERVER_PORT"))
+    app.run(port=os.getenv("SERVER_PORT"))

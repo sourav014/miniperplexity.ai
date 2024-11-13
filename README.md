@@ -32,7 +32,6 @@ Ensure the following are installed and configured before proceeding:
     
 3.  Configure environment variables: Create a .env file in the project root and add your configuration values:
     ```
-    SERVER_HOST="0.0.0.0"
     SERVER_PORT="8080"
     GOOGLE_CUSTOM_SEARCH_API_KEY="your-google-custom-search-api-key"
     SEARCH_ENGINE_ID="your-search-engine-id"
@@ -57,7 +56,6 @@ Setting Up the Repository Locally using Docker
     ```
 3.  Configure environment variables: Create a .env file in the project root and add your configuration values:
     ```
-    SERVER_HOST="0.0.0.0"
     SERVER_PORT="8080"
     GOOGLE_CUSTOM_SEARCH_API_KEY="your-google-custom-search-api-key"
     SEARCH_ENGINE_ID="your-search-engine-id"
