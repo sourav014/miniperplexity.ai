@@ -41,7 +41,7 @@ Ensure the following are installed and configured before proceeding:
     
 4.  Start the server: Run the application:
     ```
-    python3 main.py
+    python3 app.py
     ```
 
 Setting Up the Repository Locally using Docker
